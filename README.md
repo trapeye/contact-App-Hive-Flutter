@@ -1,6 +1,6 @@
 # Contact App Using Hive
 
-I make a simple contact app for practice using Hive that have CRUD(CREATE, READ, UPDATE, DELETE).
+I make a simple contact app for practice using Hive that has CRUD(CREATE, READ, UPDATE, DELETE).
 
 Here simple code to add,read,write and delete, for more information read docs [Hive](https://docs.hivedb.dev/)
 
