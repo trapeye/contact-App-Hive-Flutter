@@ -29,7 +29,8 @@ To delete
 box.deleteAt(index);
 ```
 
-Feature that this app have:
+The feature that this app have:
+- [Image Picker](https://pub.dev/packages/image_picker)
 - CRUD contact
 - Favourite
 - [URL_Launcher](https://pub.dev/packages/url_launcher) telephone and email
