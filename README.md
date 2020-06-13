@@ -1,6 +1,28 @@
-# contactmanagerapp
+# Contact App Using Hive
 
-this app for a test
+I make a simple contact app for practice using Hive that have CRUD(CREATE, READ, UPDATE, DELETE).
+
+Here simple code to add,read,write and delete, for more information read docs [Hive](https://docs.hivedb.dev/)
+
+`final box = Hive.box('myBox');`
+
+To add
+`box.add(value);`
+
+To read
+`box.getAt(index);`
+
+To update
+`box.putAt('index', 'value');`
+
+To delete
+`box.deleteAt('index')`
+
+Feature that this app have:
+- Favourite
+- [URL_Launcher](https://pub.dev/packages/url_launcher) telephone and email
+
+[Hive](https://docs.hivedb.dev/) is a lightweight and blazing fast key-value database written in pure Dart.
 
 ## Getting Started
 

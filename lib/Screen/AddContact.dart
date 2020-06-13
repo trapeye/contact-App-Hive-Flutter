@@ -15,11 +15,8 @@ class _AddContactState extends State<AddContact> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String firstName;
-
   String lastName;
-
   String telephone;
-
   String email;
   String picture;
 
@@ -81,7 +78,6 @@ class _AddContactState extends State<AddContact> {
         picture: picture,
         email: email,
         telephone: telephone);
-    print('hi');
     final contactsBox = Hive.box('contacts');
     contactsBox.add(newContact);
   }
@@ -92,7 +88,9 @@ class _AddContactState extends State<AddContact> {
       appBar: AppBar(
         centerTitle: true,
         leading: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pop(context);
+          },
           icon: Icon(Icons.close),
         ),
         title: Text('Add Contacts'),

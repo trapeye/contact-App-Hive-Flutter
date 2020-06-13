@@ -1,16 +1,13 @@
-import 'package:contactmanagerapp/Hive/contact.dart';
+import 'package:contactmanagerapp/Hive/OpenBox.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
-import 'package:path_provider/path_provider.dart';
+
 import 'Screen/HomePage.dart';
-import 'Screen/ProfileContact.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  final appDocumentDir = await getApplicationDocumentsDirectory();
-  Hive.init(appDocumentDir.path);
-  Hive.registerAdapter(ContactAdapter());
+  await OpenBox.registerAdapter();
   runApp(MyApp());
 }
 
@@ -51,7 +48,7 @@ class StartAppHive extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: FutureBuilder(
-        future: Hive.openBox('contacts'),
+        future: OpenBox.openBox(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasError)

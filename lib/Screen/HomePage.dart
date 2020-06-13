@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:basic_utils/basic_utils.dart';
 import 'package:contactmanagerapp/Hive/contact.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -14,14 +15,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Icon searchIcon = Icon(Icons.search);
-  Widget title = Text('Contacts');
-  bool searching = false;
-  final _cSearch = TextEditingController();
-
   static List<Widget> tabWidgets = <Widget>[
     ContactList(),
-    ContactList(),
+    FavouriteContact(),
   ];
   int _selectedIndex = 0;
 
@@ -29,37 +25,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: title,
-        actions: <Widget>[
-          IconButton(
-            icon: searchIcon,
-            onPressed: () {
-              setState(() {
-                if (searchIcon.icon == Icons.search) {
-                  searchIcon = Icon(Icons.close);
-                  title = TextField(
-                    controller: _cSearch,
-                    autofocus: true,
-                    onChanged: (value) {
-                      searching = true;
-                    },
-                    decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.search, color: Colors.white),
-                        hintText: "Search Contact",
-                        hintStyle: TextStyle(color: Colors.white)),
-                  );
-                } else {
-                  _cSearch.clear();
-                  searching = false;
-                  searchIcon = Icon(
-                    Icons.search,
-                  );
-                  title = Text("Contacts");
-                }
-              });
-            },
-          )
-        ],
+        centerTitle: true,
+        title: Text('Contacts'),
       ),
       body: tabWidgets.elementAt(_selectedIndex),
       floatingActionButton: FloatingActionButton(
@@ -93,9 +60,30 @@ class ContactList extends StatefulWidget {
 }
 
 class _ContactListState extends State<ContactList> {
-  Icon favourite = Icon(
-    Icons.favorite_border,
-  );
+  Box<Contact> favoriteBox;
+
+  @override
+  void initState() {
+    super.initState();
+    favoriteBox = Hive.box('favoritesBox');
+  }
+
+  final contactsBox = Hive.box('contacts');
+
+  void onFavoritePress(int index) {
+    if (favoriteBox.containsKey(index)) {
+      favoriteBox.delete(index);
+      return;
+    }
+    favoriteBox.put(index, contactsBox.getAt(index));
+  }
+
+  Widget favourite(int index) {
+    if (favoriteBox.containsKey(index)) {
+      return Icon(Icons.favorite, color: Colors.red);
+    }
+    return Icon(Icons.favorite_border);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,6 +101,9 @@ class _ContactListState extends State<ContactList> {
                 physics: BouncingScrollPhysics(),
                 itemBuilder: (context, index) {
                   final contactBox = contact.getAt(index) as Contact;
+
+                  String telephone = StringUtils.addCharAtPosition(
+                      '${contactBox.telephone}', " - ", 3);
 
                   return InkWell(
                     onTap: () {
@@ -185,28 +176,19 @@ class _ContactListState extends State<ContactList> {
                               ),
                             ),
                           ),
-                          subtitle: Text('${contactBox.telephone}',
+                          subtitle: Text('$telephone',
                               style: TextStyle(fontSize: 25)),
                           trailing: IconButton(
                             onPressed: () {
                               setState(() {
-                                favourite = Icon(
-                                  Icons.favorite,
-                                  color: Colors.redAccent,
-                                );
+                                onFavoritePress(index);
                               });
                             },
-                            icon: favourite,
+                            icon: favourite(index),
                           ),
                         ),
                       ),
                       secondaryActions: <Widget>[
-                        IconSlideAction(
-                          caption: 'Edit',
-                          color: Colors.blue,
-                          icon: Icons.edit,
-                          onTap: () {},
-                        ),
                         IconSlideAction(
                           caption: 'Delete',
                           color: Colors.redAccent,
@@ -221,5 +203,133 @@ class _ContactListState extends State<ContactList> {
                 });
           },
         ));
+  }
+}
+
+class FavouriteContact extends StatefulWidget {
+  @override
+  _FavouriteContactState createState() => _FavouriteContactState();
+}
+
+class _FavouriteContactState extends State<FavouriteContact> {
+  Box<Contact> favoriteBox;
+  final contactsBox = Hive.box('contacts');
+
+  List<Contact> contactList = [];
+
+  void favouriteContactList() {
+    contactList.clear();
+    for (int i = 0; i < contactsBox.length; i++) {
+      if (favoriteBox.containsKey(i)) {
+        print(contactsBox.getAt(i).telephone);
+        contactList.add(contactsBox.getAt(i));
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    favoriteBox = Hive.box('favoritesBox');
+    favouriteContactList();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ListView.separated(
+        separatorBuilder: (BuildContext context, int index) => const SizedBox(
+          height: 10,
+        ),
+        itemCount: contactList.length,
+        physics: BouncingScrollPhysics(),
+        itemBuilder: (context, index) {
+          String telephone = StringUtils.addCharAtPosition(
+              '${contactList[index].telephone}', " - ", 3);
+
+          return InkWell(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ProfileContact(
+                            index: index,
+                          ))).then((value) {
+                setState(() {
+                  favouriteContactList();
+                });
+              });
+            },
+            child: Slidable(
+              actionPane: SlidableDrawerActionPane(),
+              actionExtentRatio: 0.25,
+              child: Ink(
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                      bottomLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20)),
+                ),
+                child: ListTile(
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 20.0,
+                  ),
+                  leading: Hero(
+                    tag: 'Picture$index',
+                    child: ClipOval(
+                      child: Material(
+                        color: Colors.redAccent,
+                        child: SizedBox(
+                            width: 50,
+                            height: 50,
+                            child: contactList[index].picture == null
+                                ? Icon(
+                                    Icons.camera_alt,
+                                    size: 30,
+                                  )
+                                : Image.memory(
+                                    Base64Decoder()
+                                        .convert(contactList[index].picture),
+                                    fit: BoxFit.cover,
+                                    gaplessPlayback: true,
+                                  )),
+                      ),
+                    ),
+                  ),
+                  title: Hero(
+                    tag: 'NameText$index',
+                    child: RichText(
+                      text: TextSpan(
+                        children: <TextSpan>[
+                          TextSpan(
+                              text: '${contactList[index].firstName}',
+                              style: TextStyle(
+                                color: Colors.redAccent,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              )),
+                          TextSpan(
+                              text: '  ${contactList[index].lastName}',
+                              style: TextStyle(
+                                color: Colors.pink,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 18,
+                              )),
+                        ],
+                      ),
+                    ),
+                  ),
+                  subtitle: Text('$telephone', style: TextStyle(fontSize: 25)),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 }

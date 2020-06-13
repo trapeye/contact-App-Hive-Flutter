@@ -35,6 +35,8 @@ dependencies:
   image_picker: ^0.6.7+1
   intl_phone_number_input: ^0.4.4
   url_launcher: ^5.4.10
+  basic_utils: ^2.5.3
+
 dev_dependencies:
   hive_generator: ^0.7.0+2
   build_runner:
@@ -42,7 +44,7 @@ dev_dependencies:
     sdk: flutter
 
 dependency_overrides:
-  dartx: ^0.4.1
+  path: ^1.7.0
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
