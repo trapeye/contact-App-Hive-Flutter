@@ -4,23 +4,37 @@ I make a simple contact app for practice using Hive that have CRUD(CREATE, READ,
 
 Here simple code to add,read,write and delete, for more information read docs [Hive](https://docs.hivedb.dev/)
 
-`final box = Hive.box('myBox');`
+```javascript
+final box = Hive.box('myBox');
+```
 
 To add
-`box.add(value);`
+
+```dart
+box.add(value);
+```
 
 To read
-`box.getAt(index);`
+```dart
+box.getAt(index);
+```
 
 To update
-`box.putAt('index', 'value');`
+```dart
+box.putAt(index, value);
+```
 
 To delete
-`box.deleteAt('index')`
+```dart
+box.deleteAt(index);
+```
 
 Feature that this app have:
+- CRUD contact
 - Favourite
 - [URL_Launcher](https://pub.dev/packages/url_launcher) telephone and email
+
+![addContact](https://github.com/trapeye/contact-App-Hive-Flutter/blob/master/screesnshot/addContact.png)![ContactDetail](https://github.com/trapeye/contact-App-Hive-Flutter/blob/master/screesnshot/contactDetail.png)![contactHomePage](https://github.com/trapeye/contact-App-Hive-Flutter/blob/master/screesnshot/contactHomePage.png)![editContact](https://github.com/trapeye/contact-App-Hive-Flutter/blob/master/screesnshot/editContact.png)![FavouriteContact](https://github.com/trapeye/contact-App-Hive-Flutter/blob/master/screesnshot/favouriteContact.png)
 
 [Hive](https://docs.hivedb.dev/) is a lightweight and blazing fast key-value database written in pure Dart.
 
